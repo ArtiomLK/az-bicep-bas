@@ -21,19 +21,16 @@ param bas_enableKerberos bool = false
 param bas_sku string = 'Standard'
 param vnet_bas_n string = 'vnet-hub-extension-bas-${location}-${env}'
 param vnet_bas_addr string
+param bas_nsg_n string = 'nsg-bas-${location}-${env}'
+param bas_pip_n string = 'pip-bas-${location}-${env}'
 
-// ------------------------------------------------------------------------------------------------
-// Bastion variables
-// ------------------------------------------------------------------------------------------------
-var bas_nsg = 'nsg-bas-${location}-${env}'
-var bas_pip = 'pip-bas-${location}-${env}'
 // ------------------------------------------------------------------------------------------------
 // Bastion - Deploy Azure Bastion
 // ------------------------------------------------------------------------------------------------
 module nsgBastion 'components/nsg/nsgBas.bicep' = {
-  name: bas_nsg
+  name: bas_nsg_n
   params: {
-    nsgName: bas_nsg
+    nsgName: bas_nsg_n
     location: location
     tags:tags
   }
@@ -64,9 +61,9 @@ resource vnetBastion 'Microsoft.Network/virtualNetworks@2021-02-01' = {
 }
 
 module pipBastion 'components/pip/pip.bicep' = {
-  name: bas_pip
+  name: bas_pip_n
   params: {
-    pip_n: bas_pip
+    pip_n: bas_pip_n
     tags: tags
     location: location
   }

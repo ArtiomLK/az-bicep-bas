@@ -79,4 +79,3 @@ module bastionStandardFull '../main.bicep' = {
     tags: tags
   }
 }
-

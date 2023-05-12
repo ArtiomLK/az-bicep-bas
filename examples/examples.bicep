@@ -12,7 +12,7 @@ param location string = resourceGroup().location
 // Bastion Configuration parameters
 // ------------------------------------------------------------------------------------------------
 var env ='dev'
-var vnet_bas_addr = '10.10.10.10/24'
+var vnet_bas_addr = '10.10.10.0/24'
 
 // ------------------------------------------------------------------------------------------------
 // Bastion - Deploy Azure Bastion

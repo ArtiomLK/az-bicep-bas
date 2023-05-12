@@ -18,7 +18,7 @@ var vnet_bas_addr = '10.10.10.0/24'
 // Bastion - Deploy Azure Bastion
 // ------------------------------------------------------------------------------------------------
 module bastionDefault '../main.bicep' = {
-  name: 'bas-default'
+  name: 'bas-default-deployment'
   params: {
     vnet_bas_addr: vnet_bas_addr
     env: env
@@ -28,7 +28,7 @@ module bastionDefault '../main.bicep' = {
 }
 
 module bastionBasic '../main.bicep' = {
-  name: 'bas-basic'
+  name: 'bas-basic-deployment'
   params: {
     bas_n: 'bas-basic'
     bas_sku: 'Basic'
@@ -43,7 +43,7 @@ module bastionBasic '../main.bicep' = {
 }
 
 module bastionStandard '../main.bicep' = {
-  name: 'bas-standard'
+  name: 'bas-standard-deployment'
   params: {
     bas_n: 'bas-standard'
     bas_sku: 'Standard'
@@ -62,7 +62,7 @@ module bastionStandard '../main.bicep' = {
 }
 
 module bastionStandardFull '../main.bicep' = {
-  name: 'bas-standard-full'
+  name: 'bas-standard-full-deployment'
   params: {
     bas_n: 'bas-standard-full'
     bas_sku: 'Standard'

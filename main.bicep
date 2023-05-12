@@ -36,7 +36,7 @@ module nsgBastion 'components/nsg/nsgBas.bicep' = {
   }
 }
 
-resource vnetBastion 'Microsoft.Network/virtualNetworks@2021-02-01' = {
+resource vnetBastion 'Microsoft.Network/virtualNetworks@2022-11-01' = {
   name: vnet_bas_n
   location: location
   tags: tags

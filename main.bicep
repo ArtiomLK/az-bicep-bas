@@ -83,3 +83,5 @@ module bas 'components/bas/bas.bicep' = {
     location: location
   }
 }
+
+output vnet_id string = vnetBastion.id

@@ -9,7 +9,7 @@ param location string = resourceGroup().location
 // Bastion parameters
 // ------------------------------------------------------------------------------------------------
 @description('Bastion vnet name. vnet-hub-extension-bas-dev-eastus')
-param bas_n string = 'bas-${location}-${env}'
+param bas_n string = 'bas-${env}-${location}'
 param bas_enableTunneling bool = true
 param bas_enableIpConnect bool = true
 param bas_enableShareableLink bool = true
@@ -19,10 +19,10 @@ param bas_enableKerberos bool = false
   'Basic'
 ])
 param bas_sku string = 'Standard'
-param vnet_bas_n string = 'vnet-hub-extension-bas-${location}-${env}'
+param vnet_bas_n string = 'vnet-hub-extension-bas-${env}-${location}'
 param vnet_bas_addr string
-param bas_nsg_n string = 'nsg-bas-${location}-${env}'
-param bas_pip_n string = 'pip-bas-${location}-${env}'
+param bas_nsg_n string = 'nsg-bas-${env}-${location}'
+param bas_pip_n string = 'pip-bas-${env}-${location}'
 
 // ------------------------------------------------------------------------------------------------
 // Bastion - Deploy Azure Bastion

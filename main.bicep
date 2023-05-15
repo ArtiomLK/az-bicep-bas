@@ -9,7 +9,7 @@ param location string = resourceGroup().location
 // Bastion parameters
 // ------------------------------------------------------------------------------------------------
 @description('Bastion vnet name. vnet-hub-extension-bas-dev-eastus')
-param bas_n string = 'bas-${location}-${env}'
+param bas_n string = 'bas-${env}-${location}'
 param bas_enableTunneling bool = true
 param bas_enableIpConnect bool = true
 param bas_enableShareableLink bool = true
@@ -19,10 +19,10 @@ param bas_enableKerberos bool = false
   'Basic'
 ])
 param bas_sku string = 'Standard'
-param vnet_bas_n string = 'vnet-hub-extension-bas-${location}-${env}'
+param vnet_bas_n string = 'vnet-hub-extension-bas-${env}-${location}'
 param vnet_bas_addr string
-param bas_nsg_n string = 'nsg-bas-${location}-${env}'
-param bas_pip_n string = 'pip-bas-${location}-${env}'
+param bas_nsg_n string = 'nsg-bas-${env}-${location}'
+param bas_pip_n string = 'pip-bas-${env}-${location}'
 
 // ------------------------------------------------------------------------------------------------
 // Bastion - Deploy Azure Bastion
@@ -30,16 +30,16 @@ param bas_pip_n string = 'pip-bas-${location}-${env}'
 module nsgBastion 'components/nsg/nsgBas.bicep' = {
   name: bas_nsg_n
   params: {
-    nsgName: bas_nsg_n
-    location: location
     tags:tags
+    location: location
+    nsgName: bas_nsg_n
   }
 }
 
 resource vnetBastion 'Microsoft.Network/virtualNetworks@2022-11-01' = {
   name: vnet_bas_n
-  location: location
   tags: tags
+  location: location
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -63,15 +63,17 @@ resource vnetBastion 'Microsoft.Network/virtualNetworks@2022-11-01' = {
 module pipBastion 'components/pip/pip.bicep' = {
   name: bas_pip_n
   params: {
-    pip_n: bas_pip_n
     tags: tags
     location: location
+    pip_n: bas_pip_n
   }
 }
 
 module bas 'components/bas/bas.bicep' = {
   name: bas_n
   params: {
+    tags: tags
+    location: location
     bas_n: bas_n
     bas_sku: bas_sku
     bas_enableTunneling: bas_sku == 'Basic' ? false : bas_enableTunneling
@@ -80,7 +82,6 @@ module bas 'components/bas/bas.bicep' = {
     enableKerberos: bas_enableKerberos
     snet_bas_id: vnetBastion.properties.subnets[0].id
     pip_id: pipBastion.outputs.id
-    location: location
   }
 }
 

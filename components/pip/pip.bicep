@@ -1,7 +1,8 @@
 
-param tags object
-param pip_n string
 param location string = resourceGroup().location
+param tags object
+
+param pip_n string
 
 resource bastionPublicIpAddress 'Microsoft.Network/publicIPAddresses@2022-11-01' = {
   name: pip_n

@@ -1,7 +1,9 @@
+param location string = resourceGroup().location
+param tags object
+
 param bas_n string
 param snet_bas_id string
 param pip_id string
-param location string = resourceGroup().location
 @allowed([
   'Standard'
   'Basic'
@@ -39,4 +41,5 @@ resource bastionHost 'Microsoft.Network/bastionHosts@2022-11-01' = {
   sku: {
     name: bas_sku
   }
+  tags: tags
 }

@@ -32,9 +32,9 @@ module bastionBasic '../main.bicep' = {
   params: {
     bas_n: 'bas-basic'
     bas_sku: 'Basic'
-    vnet_bas_n: 'vnet-bas-basic'
-    bas_nsg_n: 'nsg-bas-basic'
-    bas_pip_n: 'pip-bas-basic'
+    vnet_bas_n: 'vnet-bas-basic-${env}-${location}'
+    bas_nsg_n: 'nsg-bas-basic-${env}-${location}'
+    bas_pip_n: 'pip-bas-basic-${env}-${location}'
     vnet_bas_addr: vnet_bas_addr
     env: env
     location: location
@@ -47,9 +47,9 @@ module bastionStandard '../main.bicep' = {
   params: {
     bas_n: 'bas-standard'
     bas_sku: 'Standard'
-    vnet_bas_n: 'vnet-bas-standard'
-    bas_nsg_n: 'nsg-bas-standard'
-    bas_pip_n: 'pip-bas-standard'
+    vnet_bas_n: 'vnet-bas-standard-${env}-${location}'
+    bas_nsg_n: 'nsg-bas-standard-${env}-${location}'
+    bas_pip_n: 'pip-bas-standard-${env}-${location}'
     vnet_bas_addr: vnet_bas_addr
     bas_enableIpConnect: false
     bas_enableKerberos: false
@@ -66,9 +66,9 @@ module bastionStandardFull '../main.bicep' = {
   params: {
     bas_n: 'bas-standard-full'
     bas_sku: 'Standard'
-    vnet_bas_n: 'vnet-bas-standard-full'
-    bas_nsg_n: 'nsg-bas-standard-full'
-    bas_pip_n: 'pip-bas-standard-full'
+    vnet_bas_n: 'vnet-bas-standard-full-${env}-${location}'
+    bas_nsg_n: 'nsg-bas-standard-full-${env}-${location}'
+    bas_pip_n: 'pip-bas-standard-full-${env}-${location}'
     vnet_bas_addr: vnet_bas_addr
     bas_enableIpConnect: true
     bas_enableKerberos: true

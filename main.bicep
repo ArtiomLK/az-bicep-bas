@@ -30,16 +30,16 @@ param bas_pip_n string = 'pip-bas-${env}-${location}'
 module nsgBastion 'components/nsg/nsgBas.bicep' = {
   name: bas_nsg_n
   params: {
-    nsgName: bas_nsg_n
-    location: location
     tags:tags
+    location: location
+    nsgName: bas_nsg_n
   }
 }
 
 resource vnetBastion 'Microsoft.Network/virtualNetworks@2022-11-01' = {
   name: vnet_bas_n
-  location: location
   tags: tags
+  location: location
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -63,15 +63,17 @@ resource vnetBastion 'Microsoft.Network/virtualNetworks@2022-11-01' = {
 module pipBastion 'components/pip/pip.bicep' = {
   name: bas_pip_n
   params: {
-    pip_n: bas_pip_n
     tags: tags
     location: location
+    pip_n: bas_pip_n
   }
 }
 
 module bas 'components/bas/bas.bicep' = {
   name: bas_n
   params: {
+    tags: tags
+    location: location
     bas_n: bas_n
     bas_sku: bas_sku
     bas_enableTunneling: bas_sku == 'Basic' ? false : bas_enableTunneling
@@ -80,7 +82,6 @@ module bas 'components/bas/bas.bicep' = {
     enableKerberos: bas_enableKerberos
     snet_bas_id: vnetBastion.properties.subnets[0].id
     pip_id: pipBastion.outputs.id
-    location: location
   }
 }
 

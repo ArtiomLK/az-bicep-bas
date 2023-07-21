@@ -27,7 +27,7 @@ param bas_pip_n string = 'pip-bas-${env}-${location}'
 // ------------------------------------------------------------------------------------------------
 // Bastion - Deploy Azure Bastion
 // ------------------------------------------------------------------------------------------------
-module nsgBastion 'components/nsg/nsgBas.bicep' = {
+module nsgBastion 'modules/nsg/nsgBas.bicep' = {
   name: bas_nsg_n
   params: {
     tags:tags
@@ -60,7 +60,7 @@ resource vnetBastion 'Microsoft.Network/virtualNetworks@2022-11-01' = {
   }
 }
 
-module pipBastion 'components/pip/pip.bicep' = {
+module pipBastion 'modules/pip/pip.bicep' = {
   name: bas_pip_n
   params: {
     tags: tags
@@ -69,7 +69,7 @@ module pipBastion 'components/pip/pip.bicep' = {
   }
 }
 
-module bas 'components/bas/bas.bicep' = {
+module bas 'modules/bas/bas.bicep' = {
   name: bas_n
   params: {
     tags: tags

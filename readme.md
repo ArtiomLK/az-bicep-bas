@@ -24,7 +24,7 @@ vnet_bas_addr="10.10.0.0/24";                                           echo $vn
 snet_bas_n="AzureBastionSubnet";                                        echo $snet_bas_n
 snet_bas_addr="10.10.0.192/26";                                         echo $snet_bas_addr   # must update
 
-nsg_n_bastion="nsg-$project-$env-$l";                                   echo $nsg_n_bastion
+nsg_n_bastion="nsg-bas-$project-$env-$l";                                   echo $nsg_n_bastion
 
 # ---
 # BAS

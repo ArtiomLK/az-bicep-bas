@@ -57,112 +57,121 @@ az network nsg create \
 --location $l \
 --tags $tags
 
-# Bastion NSG Rules
+# ------------------------------------------------------------------------------------------------
+# Create BAS NSG Rules
+# ------------------------------------------------------------------------------------------------
 # Inbound/Ingress
 # AllowHttpsInBound
 az network nsg rule create \
 --subscription $sub_id \
 --resource-group $rg_bas_n \
---name AllowHttpsInBound \
 --nsg-name $nsg_bas_n \
+--name AllowHttpsInBound \
 --priority 120 \
---destination-port-ranges 443 \
 --protocol TCP \
+--destination-port-ranges 443 \
 --source-address-prefixes Internet \
 --destination-address-prefixes "*" \
 --access Allow
+
 # AllowGatewayManagerInbound
 az network nsg rule create \
 --subscription $sub_id \
 --resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowGatewayManagerInbound \
 --direction Inbound \
---nsg-name $nsg_bas_n \
 --priority 130 \
---destination-port-ranges 443 \
 --protocol TCP \
+--destination-port-ranges 443 \
 --source-address-prefixes GatewayManager \
 --destination-address-prefixes "*" \
 --access Allow
+
 # AllowAzureLoadBalancerInbound
 az network nsg rule create \
 --subscription $sub_id \
 --resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowAzureLoadBalancerInbound \
 --direction Inbound \
---nsg-name $nsg_bas_n \
 --priority 140 \
---destination-port-ranges 443 \
 --protocol TCP \
+--destination-port-ranges 443 \
 --source-address-prefixes AzureLoadBalancer \
 --destination-address-prefixes "*" \
 --access Allow
+
 # AllowBastionHostCommunication
 az network nsg rule create \
 --subscription $sub_id \
 --resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowBastionHostCommunication \
 --direction Inbound \
---nsg-name $nsg_bas_n \
 --priority 150 \
---destination-port-ranges 8080 5701 \
 --protocol "*" \
+--destination-port-ranges 8080 5701 \
 --source-address-prefixes VirtualNetwork \
 --destination-address-prefixes VirtualNetwork \
 --access Allow
+
 # OutBound/Egress
 # AllowSshRdpOutbound
 az network nsg rule create \
 --subscription $sub_id \
 --resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowSshRdpOutbound \
+--direction Outbound \
 --priority 100 \
---destination-port-ranges 22 3389 \
 --protocol "*" \
+--destination-port-ranges 22 3389 \
 --source-address-prefixes "*" \
 --destination-address-prefixes VirtualNetwork \
---access Allow \
---nsg-name $nsg_bas_n \
---direction Outbound
+--access Allow
+
 # AllowAzureCloudOutbound
 az network nsg rule create \
 --subscription $sub_id \
 --resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowAzureCloudOutbound \
+--direction Outbound \
 --priority 110 \
---destination-port-ranges 443 \
 --protocol TCP \
+--destination-port-ranges 443 \
 --source-address-prefixes "*" \
 --destination-address-prefixes AzureCloud \
---access Allow \
---nsg-name $nsg_bas_n \
---direction Outbound
+--access Allow
+
 # AllowBastion:Communication
 az network nsg rule create \
 --subscription $sub_id \
 --resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowBastionCommunication \
+--direction Outbound \
 --priority 120 \
---destination-port-ranges 8080 5701 \
 --protocol "*" \
+--destination-port-ranges 8080 5701 \
 --source-address-prefixes VirtualNetwork \
 --destination-address-prefixes VirtualNetwork \
---access Allow \
---nsg-name $nsg_bas_n \
---direction Outbound
+--access Allow
+
 # AllowGetSessionInformation
 az network nsg rule create \
 --subscription $sub_id \
 --resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowGetSessionInformation \
+--direction Outbound \
 --priority 130 \
---destination-port-ranges 80 \
 --protocol "*" \
+--destination-port-ranges 80 \
 --source-address-prefixes "*" \
 --destination-address-prefixes Internet \
---access Allow \
---nsg-name $nsg_bas_n \
---direction Outbound
+--access Allow
 
 # ------------------------------------------------------------------------------------------------
 # Create Bastion VNET

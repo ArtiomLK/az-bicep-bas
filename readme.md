@@ -18,19 +18,19 @@ tags="project=$project env=$env architecture=extension pattern";        echo $ta
 # BAS - NETWORK TOPOLOGY
 # ---
 rg_bas_n="rg-$project-bas-$env-$l";                                     echo $rg_bas_n        # must update
-vnet_bas_n="vnet-bas-$project-$env-$l";                                 echo $vnet_bas_n      # must update
+vnet_bas_n="vnet-$project-bas-$env-$l";                                 echo $vnet_bas_n      # must update
 vnet_bas_addr="10.10.0.0/24";                                           echo $vnet_bas_addr   # must update
 
 snet_bas_n="AzureBastionSubnet";                                        echo $snet_bas_n
 snet_bas_addr="10.10.0.192/26";                                         echo $snet_bas_addr   # must update
 
-nsg_n_bastion="nsg-bas-$project-$env-$l";                               echo $nsg_n_bastion
+nsg_n_bastion="nsg-$project-bas-$env-$l";                               echo $nsg_n_bastion
 
 # ---
 # BAS
 # ---
 bas_n="bas-$project-$env-$l";                                           echo $bas_n
-bas_pip="pip-bas-$project-$env-$l";                                     echo $bas_pip
+bas_pip="pip-$project-bas-$env-$l";                                     echo $bas_pip
 bas_sku="Standard";                                                     echo $bas_sku
 bas_pip_sku="Standard";                                                 echo $bas_pip_sku
 bas_enable_native_client_support="true";                                echo $bas_enable_native_client_support

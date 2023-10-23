@@ -2,8 +2,6 @@
 
 ## Instructions - Create Bastion on VWAN [Hub Extension Pattern][8]
 
-- hext: hub extention pattern
-
 ```bash
 # ---
 # Main Vars

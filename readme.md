@@ -22,7 +22,7 @@ vnet_bas_addr="10.10.0.0/24";                                           echo $vn
 snet_bas_n="AzureBastionSubnet";                                        echo $snet_bas_n
 snet_bas_addr="10.10.0.192/26";                                         echo $snet_bas_addr   # must update
 
-nsg_n_bastion="nsg-$project-bas-$env-$l";                               echo $nsg_n_bastion
+nsg_bas_n="nsg-$project-bas-$env-$l";                                   echo $nsg_bas_n
 
 # ---
 # BAS
@@ -33,142 +33,165 @@ bas_sku="Standard";                                                     echo $ba
 bas_pip_sku="Standard";                                                 echo $bas_pip_sku
 bas_enable_native_client_support="true";                                echo $bas_enable_native_client_support
 bas_enable_ip_based_connection="true";                                  echo $bas_enable_ip_based_connection
-```
-
-[Deploy Bastion to HUB RG or Create HUB RG if nonexistent][3]
-
-```bash
-# ------------------------------------------------------------------------------------------------
-# Reference HUB vNet - HUB vNet should be already created, otherwise uncomment and create the HUB vnet
-# ------------------------------------------------------------------------------------------------
-# az network vnet create \
-# --subscription $sub_id \
-# --resource-group "rg-regular-hub" \
-# --name "vnet-regular-hub" \
-# --address-prefixes "10.0.0.0/24 <- replace" \
-# --location $l \
-# --tags $tags
 
 # ------------------------------------------------------------------------------------------------
-# Create bastion NSG
+# DEPLOYMENT
 # ------------------------------------------------------------------------------------------------
-az network nsg create \
+# ------------------------------------------------------------------------------------------------
+# Create BAS RG
+# ------------------------------------------------------------------------------------------------
+az group create \
 --subscription $sub_id \
---resource-group $rg_n \
---name $nsg_n_bastion \
+--name $rg_bas_n \
 --location $l \
 --tags $tags
 
-# Bastion NSG Rules
+# ------------------------------------------------------------------------------------------------
+# Create BAS NSG
+# ------------------------------------------------------------------------------------------------
+az network nsg create \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--name $nsg_bas_n \
+--location $l \
+--tags $tags
+
+# ------------------------------------------------------------------------------------------------
+# Create BAS NSG Rules
+# ------------------------------------------------------------------------------------------------
 # Inbound/Ingress
 # AllowHttpsInBound
 az network nsg rule create \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowHttpsInBound \
---resource-group $rg_n \
---nsg-name $nsg_n_bastion \
 --priority 120 \
---destination-port-ranges 443 \
 --protocol TCP \
+--destination-port-ranges 443 \
 --source-address-prefixes Internet \
 --destination-address-prefixes "*" \
 --access Allow
+
 # AllowGatewayManagerInbound
 az network nsg rule create \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowGatewayManagerInbound \
 --direction Inbound \
---resource-group $rg_n \
---nsg-name $nsg_n_bastion \
 --priority 130 \
---destination-port-ranges 443 \
 --protocol TCP \
+--destination-port-ranges 443 \
 --source-address-prefixes GatewayManager \
 --destination-address-prefixes "*" \
 --access Allow
+
 # AllowAzureLoadBalancerInbound
 az network nsg rule create \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowAzureLoadBalancerInbound \
 --direction Inbound \
---resource-group $rg_n \
---nsg-name $nsg_n_bastion \
 --priority 140 \
---destination-port-ranges 443 \
 --protocol TCP \
+--destination-port-ranges 443 \
 --source-address-prefixes AzureLoadBalancer \
 --destination-address-prefixes "*" \
 --access Allow
+
 # AllowBastionHostCommunication
 az network nsg rule create \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowBastionHostCommunication \
 --direction Inbound \
---resource-group $rg_n \
---nsg-name $nsg_n_bastion \
 --priority 150 \
---destination-port-ranges 8080 5701 \
 --protocol "*" \
+--destination-port-ranges 8080 5701 \
 --source-address-prefixes VirtualNetwork \
 --destination-address-prefixes VirtualNetwork \
 --access Allow
+
 # OutBound/Egress
 # AllowSshRdpOutbound
 az network nsg rule create \
---priority 100 \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowSshRdpOutbound \
---destination-port-ranges 22 3389 \
+--direction Outbound \
+--priority 100 \
 --protocol "*" \
+--destination-port-ranges 22 3389 \
 --source-address-prefixes "*" \
 --destination-address-prefixes VirtualNetwork \
---access Allow \
---nsg-name $nsg_n_bastion \
---resource-group $rg_n \
---direction Outbound
+--access Allow
+
 # AllowAzureCloudOutbound
 az network nsg rule create \
---priority 110 \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowAzureCloudOutbound \
---destination-port-ranges 443 \
+--direction Outbound \
+--priority 110 \
 --protocol TCP \
+--destination-port-ranges 443 \
 --source-address-prefixes "*" \
 --destination-address-prefixes AzureCloud \
---access Allow \
---nsg-name $nsg_n_bastion \
---resource-group $rg_n \
---direction Outbound
+--access Allow
+
 # AllowBastion:Communication
 az network nsg rule create \
---priority 120 \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowBastionCommunication \
---destination-port-ranges 8080 5701 \
+--direction Outbound \
+--priority 120 \
 --protocol "*" \
+--destination-port-ranges 8080 5701 \
 --source-address-prefixes VirtualNetwork \
 --destination-address-prefixes VirtualNetwork \
---access Allow \
---nsg-name $nsg_n_bastion \
---resource-group $rg_n \
---direction Outbound
+--access Allow
+
 # AllowGetSessionInformation
 az network nsg rule create \
---priority 130 \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--nsg-name $nsg_bas_n \
 --name AllowGetSessionInformation \
---destination-port-ranges 80 \
+--direction Outbound \
+--priority 130 \
 --protocol "*" \
+--destination-port-ranges 80 \
 --source-address-prefixes "*" \
 --destination-address-prefixes Internet \
---access Allow \
---nsg-name $nsg_n_bastion \
---resource-group $rg_n \
---direction Outbound
+--access Allow
 
 # ------------------------------------------------------------------------------------------------
-# Create Bastion SNET
+# Create Bastion VNET
 # ------------------------------------------------------------------------------------------------
-# HUB Bastion Subnet
+# Bastion vnet
+az network vnet create \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--name $vnet_bas_n \
+--address-prefixes $vnet_bas_addr \
+--location $l \
+--tags $tags
+
+# Bastion snet
 az network vnet subnet create \
 --subscription $sub_id \
---resource-group $rg_n \
---vnet-name $vnet_n \
+--resource-group $rg_bas_n \
+--vnet-name $vnet_bas_n \
 --name $snet_bas_n \
 --address-prefixes $snet_bas_addr \
---network-security-group $nsg_n_bastion
+--network-security-group $nsg_bas_n
 
 # ------------------------------------------------------------------------------------------------
 # Create PIP
@@ -176,7 +199,7 @@ az network vnet subnet create \
 # Bastion Public IP
 az network public-ip create \
 --subscription $sub_id \
---resource-group $rg_n \
+--resource-group $rg_bas_n \
 --name $bas_pip \
 --sku $bas_pip_sku \
 --zone 1 2 3 \
@@ -189,10 +212,10 @@ az network public-ip create \
 # Bastion (it takes a while go get some coffee)
 az network bastion create \
 --subscription $sub_id \
---resource-group $rg_n \
+--resource-group $rg_bas_n \
 --name $bas_n \
 --public-ip-address $bas_pip \
---vnet-name $vnet_n \
+--vnet-name $vnet_bas_n \
 --location $l \
 --sku $bas_sku \
 --enable-ip-connect $bas_enable_ip_based_connection \
@@ -213,10 +236,27 @@ vnet1_n="vnet-dev-eastus";                                          echo $vnet1_
 
 ## Connect to a VM using a native client
 
+```bash
+# Print Bastion Public IP
+az network public-ip show \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--name $bas_pip \
+--query ipAddress \
+--output tsv
+```
+
+```PowerShell
+# TEST Connectivity To BASTION
+Test-NetConnection "BAS_PUBPLIC_IP" -Port 443 -InformationLevel "Detailed"
+```
+
 - [MS | Learn | Connect to a VM using a native client][2]
 
 ```bash
-az account show
+# Prerequisites
+az upgrade
+az account set --subscription '########-####-####-####-############'
 
 az network bastion rdp \
 --name "<BastionName>" \
@@ -228,7 +268,7 @@ az network bastion rdp \
 az network bastion rdp \
 --name $bas_n \
 --resource-group $rg_bas_n \
---target-resource-id "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/rg-name/providers/Microsoft.Compute/virtualMachines/vm-name" \
+--target-resource-id "/subscriptions/########-####-####-####-############/resourceGroups/rg-name/providers/Microsoft.Compute/virtualMachines/vm-name" \
 --target-ip-address 10.10.10.10 \
 --disable-gateway  # optional
 ```
@@ -237,10 +277,36 @@ az network bastion rdp \
 
 - [snet size + /26. Subnet size must be /26 or larger (/25, /24 etc.)][1]
 
+## TroubleShoot
+
+```bash
+# Issue
+Exception in thread Thread-1 (_start_tunnel):
+Traceback (most recent call last):
+  File "threading.py", line 1016, in _bootstrap_inner
+  File "threading.py", line 953, in run
+  File "C:\Users\artiomlk\.azure\cliextensions\bastion\azext_bastion\custom.py", line 335, in _start_tunnel
+    tunnel_server.start_server()
+  File "C:\Users\artiomlk\.azure\cliextensions\bastion\azext_bastion\tunnel.py", line 194, in start_server
+    self._listen()
+  File "C:\Users\artiomlk\.azure\cliextensions\bastion\azext_bastion\tunnel.py", line 123, in _listen
+    auth_token = self._get_auth_token()
+  File "C:\Users\artiomlk\.azure\cliextensions\bastion\azext_bastion\tunnel.py", line 112, in _get_auth_token
+    self.last_token = response_json["authToken"]
+KeyError: 'authToken'
+
+# Solution
+# Do not include the --subscription flag in the `az network bastion rdp` command and set the subscription id using
+az account set --subscription '########-####-####-####-############'
+```
+
+- [GH | ArtiomLK | Useful Bash Commands][11]
+
 ## Additional Resources
 
 - Azure Bastion
 - [MS | Learn | Connect to a VM using a native client][2]
+- [MS | Learn | Working with NSG access and Azure Bastion][10]
 - [MS | Learn | Azure Virtual Network frequently asked questions (FAQ) | What address ranges can I use in my VNets?][5]
 - [MS | Learn | VNet peering, VWAN and Azure Bastion][6]
 - [StackOverflow | ArtiomLK | Is Azure Bastion able to connect via transitive peering?][7]
@@ -255,3 +321,5 @@ az network bastion rdp \
 [7]: https://stackoverflow.com/a/75980971/5212904
 [8]: https://learn.microsoft.com/en-us/azure/architecture/guide/networking/private-link-virtual-wan-dns-virtual-hub-extension-pattern
 [9]: https://learn.microsoft.com/en-us/azure/bastion/tutorial-protect-bastion-host-ddos
+[10]: https://learn.microsoft.com/en-us/azure/bastion/bastion-nsg
+[11]: https://github.com/ArtiomLK/commands/blob/main/bash/readme.md#bash

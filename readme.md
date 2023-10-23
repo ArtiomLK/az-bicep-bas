@@ -246,6 +246,7 @@ az network bastion rdp \
 - [MS | Learn | Azure Virtual Network frequently asked questions (FAQ) | What address ranges can I use in my VNets?][5]
 - [MS | Learn | VNet peering, VWAN and Azure Bastion][6]
 - [StackOverflow | ArtiomLK | Is Azure Bastion able to connect via transitive peering?][7]
+- [MS | Tutorial: Protect your Bastion host with Azure DDoS protection][9]
 
 [1]: https://learn.microsoft.com/en-us/azure/bastion/configuration-settings#subnet
 [2]: https://learn.microsoft.com/EN-US/azure/bastion/connect-native-client-windows
@@ -255,3 +256,4 @@ az network bastion rdp \
 [6]: https://learn.microsoft.com/en-us/azure/bastion/vnet-peering
 [7]: https://stackoverflow.com/a/75980971/5212904
 [8]: https://learn.microsoft.com/en-us/azure/architecture/guide/networking/private-link-virtual-wan-dns-virtual-hub-extension-pattern
+[9]: https://learn.microsoft.com/en-us/azure/bastion/tutorial-protect-bastion-host-ddos

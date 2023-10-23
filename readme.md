@@ -18,7 +18,7 @@ tags="project=$project env=$env architecture=extension pattern";        echo $ta
 # BAS - NETWORK TOPOLOGY
 # ---
 rg_bas_n="rg-$project-bas-$env-$l";                                     echo $rg_bas_n        # must update
-vnet_bas_n="vnet-$project-$env-$l";                                     echo $vnet_bas_n      # must update
+vnet_bas_n="vnet-bas-$project-$env-$l";                                 echo $vnet_bas_n      # must update
 vnet_bas_addr="10.10.0.0/24";                                           echo $vnet_bas_addr   # must update
 
 snet_bas_n="AzureBastionSubnet";                                        echo $snet_bas_n

@@ -228,8 +228,8 @@ az network bastion rdp \
 --disable-gateway  # optional
 
 az network bastion rdp \
---name "bas-alz-bas-dev-eastus" \
---resource-group "rg-hext-dev-eastus" \
+--name $bas_n \
+--resource-group $rg_bas_n \
 --target-resource-id "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/rg-name/providers/Microsoft.Compute/virtualMachines/vm-name" \
 --target-ip-address 10.10.10.10 \
 --disable-gateway  # optional

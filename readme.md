@@ -33,11 +33,10 @@ bas_sku="Standard";                                                     echo $ba
 bas_pip_sku="Standard";                                                 echo $bas_pip_sku
 bas_enable_native_client_support="true";                                echo $bas_enable_native_client_support
 bas_enable_ip_based_connection="true";                                  echo $bas_enable_ip_based_connection
-```
 
-[Deploy Bastion to HUB RG or Create HUB RG if nonexistent][3]
-
-```bash
+# ------------------------------------------------------------------------------------------------
+# DEPLOYMENT
+# ------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------
 # Create BAS RG
 # ------------------------------------------------------------------------------------------------
@@ -237,10 +236,27 @@ vnet1_n="vnet-dev-eastus";                                          echo $vnet1_
 
 ## Connect to a VM using a native client
 
+```bash
+# Print Bastion Public IP
+az network public-ip show \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--name $bas_pip \
+--query ipAddress \
+--output tsv
+```
+
+```PowerShell
+# TEST Connectivity To BASTION
+Test-NetConnection "BAS_PUBPLIC_IP" -Port 443 -InformationLevel "Detailed"
+```
+
 - [MS | Learn | Connect to a VM using a native client][2]
 
 ```bash
-az account show
+# Prerequisites
+az upgrade
+az account set --subscription '########-####-####-####-############'
 
 az network bastion rdp \
 --name "<BastionName>" \
@@ -252,7 +268,7 @@ az network bastion rdp \
 az network bastion rdp \
 --name $bas_n \
 --resource-group $rg_bas_n \
---target-resource-id "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/rg-name/providers/Microsoft.Compute/virtualMachines/vm-name" \
+--target-resource-id "/subscriptions/########-####-####-####-############/resourceGroups/rg-name/providers/Microsoft.Compute/virtualMachines/vm-name" \
 --target-ip-address 10.10.10.10 \
 --disable-gateway  # optional
 ```
@@ -260,6 +276,31 @@ az network bastion rdp \
 ## Notes
 
 - [snet size + /26. Subnet size must be /26 or larger (/25, /24 etc.)][1]
+
+## TroubleShoot
+
+```bash
+# Issue
+Exception in thread Thread-1 (_start_tunnel):
+Traceback (most recent call last):
+  File "threading.py", line 1016, in _bootstrap_inner
+  File "threading.py", line 953, in run
+  File "C:\Users\artiomlk\.azure\cliextensions\bastion\azext_bastion\custom.py", line 335, in _start_tunnel
+    tunnel_server.start_server()
+  File "C:\Users\artiomlk\.azure\cliextensions\bastion\azext_bastion\tunnel.py", line 194, in start_server
+    self._listen()
+  File "C:\Users\artiomlk\.azure\cliextensions\bastion\azext_bastion\tunnel.py", line 123, in _listen
+    auth_token = self._get_auth_token()
+  File "C:\Users\artiomlk\.azure\cliextensions\bastion\azext_bastion\tunnel.py", line 112, in _get_auth_token
+    self.last_token = response_json["authToken"]
+KeyError: 'authToken'
+
+# Solution
+# Do not include the --subscription flag in the `az network bastion rdp` command and set the subscription id using
+az account set --subscription '########-####-####-####-############'
+```
+
+- [GH | ArtiomLK | Useful Bash Commands][11]
 
 ## Additional Resources
 
@@ -281,3 +322,4 @@ az network bastion rdp \
 [8]: https://learn.microsoft.com/en-us/azure/architecture/guide/networking/private-link-virtual-wan-dns-virtual-hub-extension-pattern
 [9]: https://learn.microsoft.com/en-us/azure/bastion/tutorial-protect-bastion-host-ddos
 [10]: https://learn.microsoft.com/en-us/azure/bastion/bastion-nsg
+[11]: https://github.com/ArtiomLK/commands/blob/main/bash/readme.md#bash

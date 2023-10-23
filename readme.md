@@ -209,8 +209,8 @@ az network bastion create \
 # Create vnet peering
 # ------------------------------------------------------------------------------------------------
 # VNET_1 Variables
-vnet1_rg_n="rg-hext-dev-eastus";                             echo $vnet1_rg_n         # must update
-vnet1_n="vnet-hext-dev-eastus";                              echo $vnet1_n            # must update
+vnet1_rg_n="rg-dev-eastus";                                         echo $vnet1_rg_n         # must update
+vnet1_n="vnet-dev-eastus";                                          echo $vnet1_n            # must update
 ```
 
 ## Connect to a VM using a native client

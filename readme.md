@@ -1,33 +1,36 @@
 # Azure Bastion
 
-## Instructions
+## Instructions - Create Bastion on VWAN [Hub Extension Pattern][8]
+
+- hext: hub extention pattern
 
 ```bash
 # ---
 # Main Vars
 # ---
 sub_id='########-####-####-####-############';                          echo $sub_id          # must update
-app="alz-bas";                                                          echo $app
-env="dev";                                                              echo $env
-l="eastus";                                                             echo $l
-tags="project=bicephub env=$env architecture=topology";                 echo $tags
+env="prod";                                                             echo $env
+project="connectivity";                                                 echo $project
+l="eastus2";                                                            echo $l
+tags="project=$project env=$env architecture=extension pattern";        echo $tags
 
 # ---
-# HUB - NETWORK TOPOLOGY
+# BAS - NETWORK TOPOLOGY
 # ---
-rg_hub_n="rg-hub-$env-$l";                                              echo $rg_hub_n        # must update
-vnet_hub_n="vnet-hub-$env-$l";                                          echo $vnet_hub_n      # must update
-vnet_hub_pre="10.10";                                                   echo $vnet_hub_pre    # must update
-vnet_hub_addr="$vnet_hub_pre.0.0/24";                                   echo $vnet_hub_addr   # must update
+rg_bas_n="rg-$project-bas-$env-$l";                                     echo $rg_bas_n        # must update
+vnet_bas_n="vnet-$project-$env-$l";                                     echo $vnet_bas_n      # must update
+vnet_bas_addr="10.10.0.0/24";                                           echo $vnet_bas_addr   # must update
+
+snet_bas_n="AzureBastionSubnet";                                        echo $snet_bas_n
+snet_bas_addr="10.10.0.192/26";                                         echo $snet_bas_addr   # must update
+
+nsg_n_bastion="nsg-$project-$env-$l";                                   echo $nsg_n_bastion
 
 # ---
-# Bastion
+# BAS
 # ---
-snet_n_bas="AzureBastionSubnet";                                        echo $snet_n_bas
-snet_addr_bas="$vnet_hub_pre.0.192/26";                                 echo $snet_addr_bas   # must update
-nsg_n_bastion="nsg-$app-$env-$l";                                       echo $nsg_n_bastion
-bas_n="bas-$app-$env-$l";                                               echo $bas_n
-bas_pip="pip-bas-$app-$env-$l";                                         echo $bas_pip
+bas_n="bas-$project-$env-$l";                                           echo $bas_n
+bas_pip="pip-bas-$project-$env-$l";                                     echo $bas_pip
 bas_sku="Standard";                                                     echo $bas_sku
 bas_pip_sku="Standard";                                                 echo $bas_pip_sku
 bas_enable_native_client_support="true";                                echo $bas_enable_native_client_support
@@ -42,9 +45,9 @@ bas_enable_ip_based_connection="true";                                  echo $ba
 # ------------------------------------------------------------------------------------------------
 # az network vnet create \
 # --subscription $sub_id \
-# --name $vnet_hub_n \
-# --resource-group $rg_hub_n \
-# --address-prefixes $vnet_hub_addr \
+# --resource-group "rg-regular-hub" \
+# --name "vnet-regular-hub" \
+# --address-prefixes "10.0.0.0/24 <- replace" \
 # --location $l \
 # --tags $tags
 
@@ -53,7 +56,7 @@ bas_enable_ip_based_connection="true";                                  echo $ba
 # ------------------------------------------------------------------------------------------------
 az network nsg create \
 --subscription $sub_id \
---resource-group $rg_hub_n \
+--resource-group $rg_n \
 --name $nsg_n_bastion \
 --location $l \
 --tags $tags
@@ -63,7 +66,7 @@ az network nsg create \
 # AllowHttpsInBound
 az network nsg rule create \
 --name AllowHttpsInBound \
---resource-group $rg_hub_n \
+--resource-group $rg_n \
 --nsg-name $nsg_n_bastion \
 --priority 120 \
 --destination-port-ranges 443 \
@@ -75,7 +78,7 @@ az network nsg rule create \
 az network nsg rule create \
 --name AllowGatewayManagerInbound \
 --direction Inbound \
---resource-group $rg_hub_n \
+--resource-group $rg_n \
 --nsg-name $nsg_n_bastion \
 --priority 130 \
 --destination-port-ranges 443 \
@@ -87,7 +90,7 @@ az network nsg rule create \
 az network nsg rule create \
 --name AllowAzureLoadBalancerInbound \
 --direction Inbound \
---resource-group $rg_hub_n \
+--resource-group $rg_n \
 --nsg-name $nsg_n_bastion \
 --priority 140 \
 --destination-port-ranges 443 \
@@ -99,7 +102,7 @@ az network nsg rule create \
 az network nsg rule create \
 --name AllowBastionHostCommunication \
 --direction Inbound \
---resource-group $rg_hub_n \
+--resource-group $rg_n \
 --nsg-name $nsg_n_bastion \
 --priority 150 \
 --destination-port-ranges 8080 5701 \
@@ -118,7 +121,7 @@ az network nsg rule create \
 --destination-address-prefixes VirtualNetwork \
 --access Allow \
 --nsg-name $nsg_n_bastion \
---resource-group $rg_hub_n \
+--resource-group $rg_n \
 --direction Outbound
 # AllowAzureCloudOutbound
 az network nsg rule create \
@@ -130,7 +133,7 @@ az network nsg rule create \
 --destination-address-prefixes AzureCloud \
 --access Allow \
 --nsg-name $nsg_n_bastion \
---resource-group $rg_hub_n \
+--resource-group $rg_n \
 --direction Outbound
 # AllowBastion:Communication
 az network nsg rule create \
@@ -142,7 +145,7 @@ az network nsg rule create \
 --destination-address-prefixes VirtualNetwork \
 --access Allow \
 --nsg-name $nsg_n_bastion \
---resource-group $rg_hub_n \
+--resource-group $rg_n \
 --direction Outbound
 # AllowGetSessionInformation
 az network nsg rule create \
@@ -154,7 +157,7 @@ az network nsg rule create \
 --destination-address-prefixes Internet \
 --access Allow \
 --nsg-name $nsg_n_bastion \
---resource-group $rg_hub_n \
+--resource-group $rg_n \
 --direction Outbound
 
 # ------------------------------------------------------------------------------------------------
@@ -163,10 +166,10 @@ az network nsg rule create \
 # HUB Bastion Subnet
 az network vnet subnet create \
 --subscription $sub_id \
---resource-group $rg_hub_n \
---vnet-name $vnet_hub_n \
---name $snet_n_bas \
---address-prefixes $snet_addr_bas \
+--resource-group $rg_n \
+--vnet-name $vnet_n \
+--name $snet_bas_n \
+--address-prefixes $snet_bas_addr \
 --network-security-group $nsg_n_bastion
 
 # ------------------------------------------------------------------------------------------------
@@ -175,7 +178,7 @@ az network vnet subnet create \
 # Bastion Public IP
 az network public-ip create \
 --subscription $sub_id \
---resource-group $rg_hub_n \
+--resource-group $rg_n \
 --name $bas_pip \
 --sku $bas_pip_sku \
 --zone 1 2 3 \
@@ -188,10 +191,10 @@ az network public-ip create \
 # Bastion (it takes a while go get some coffee)
 az network bastion create \
 --subscription $sub_id \
---resource-group $rg_hub_n \
+--resource-group $rg_n \
 --name $bas_n \
 --public-ip-address $bas_pip \
---vnet-name $vnet_hub_n \
+--vnet-name $vnet_n \
 --location $l \
 --sku $bas_sku \
 --enable-ip-connect $bas_enable_ip_based_connection \
@@ -206,8 +209,8 @@ az network bastion create \
 # Create vnet peering
 # ------------------------------------------------------------------------------------------------
 # VNET_1 Variables
-vnet1_rg_n="rg-hub-dev-eastus";                             echo $vnet1_rg_n
-vnet1_n="vnet-hub-dev-eastus";                              echo $vnet1_n
+vnet1_rg_n="rg-hext-dev-eastus";                             echo $vnet1_rg_n         # must update
+vnet1_n="vnet-hext-dev-eastus";                              echo $vnet1_n            # must update
 ```
 
 ## Connect to a VM using a native client
@@ -226,7 +229,7 @@ az network bastion rdp \
 
 az network bastion rdp \
 --name "bas-alz-bas-dev-eastus" \
---resource-group "rg-hub-dev-eastus" \
+--resource-group "rg-hext-dev-eastus" \
 --target-resource-id "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/rg-name/providers/Microsoft.Compute/virtualMachines/vm-name" \
 --target-ip-address 10.10.10.10 \
 --disable-gateway  # optional
@@ -251,3 +254,4 @@ az network bastion rdp \
 [5]: https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-faq#what-address-ranges-can-i-use-in-my-vnets
 [6]: https://learn.microsoft.com/en-us/azure/bastion/vnet-peering
 [7]: https://stackoverflow.com/a/75980971/5212904
+[8]: https://learn.microsoft.com/en-us/azure/architecture/guide/networking/private-link-virtual-wan-dns-virtual-hub-extension-pattern

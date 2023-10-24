@@ -283,7 +283,8 @@ az vm create \
 --vnet-name $vnet_bas_n \
 --subnet $snet_spoke_i_n \
 --public-ip-address "" \
---admin-username $vm_spoke_admin_n
+--admin-username $vm_spoke_admin_n \
+--tags $tags
 
 # Linux
 az vm create \
@@ -294,7 +295,8 @@ az vm create \
 --vnet-name $vnet_bas_n \
 --subnet $snet_spoke_i_n \
 --public-ip-address "" \
---admin-username $vm_spoke_admin_n
+--admin-username $vm_spoke_admin_n \
+--tags $tags
 ```
 
 ## Connect to a VM using a native client

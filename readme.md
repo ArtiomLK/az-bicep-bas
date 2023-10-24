@@ -1,6 +1,6 @@
 # Azure Bastion
 
-## Instructions - Create Bastion on VWAN [Hub Extension Pattern][8]
+## Instructions - Create Bastion for VWAN as [Hub Extension Pattern][8]
 
 ```bash
 # ---
@@ -10,7 +10,7 @@ sub_id='########-####-####-####-############';                          echo $su
 env="prod";                                                             echo $env
 project="connectivity";                                                 echo $project
 l="eastus2";                                                            echo $l
-tags="project=$project env=$env architecture=extension pattern";        echo $tags
+tags="project=$project env=$env architecture=extension-pattern";        echo $tags
 
 # ---
 # BAS - NETWORK TOPOLOGY
@@ -33,6 +33,27 @@ bas_sku="Standard";                                                     echo $ba
 bas_pip_sku="Standard";                                                 echo $bas_pip_sku
 bas_enable_native_client_support="true";                                echo $bas_enable_native_client_support
 bas_enable_ip_based_connection="true";                                  echo $bas_enable_ip_based_connection
+
+# ---
+# Spoke VM - NETWORK TOPOLOGY
+# ---
+snet_spoke_i_n="snet-spoke-0";                                          echo $snet_spoke_i_n
+snet_spoke_i_addr="10.10.0.128/26";                                     echo $snet_spoke_i_addr   # must update
+
+nsg_sopke_i_n="nsg-$project-spoke-0-$env-$l";                           echo $nsg_sopke_i_n
+
+# ---
+# Spoke VM
+# ---
+vm_spoke_admin_n="artiomlk";                                            echo $vm_spoke_admin_n
+
+# Windows
+vm_spoke_win_n="vm-spoke-win-0";                                        echo $vm_spoke_win_n
+vm_spoke_win_img="Win2022AzureEditionCore";                             echo $vm_spoke_win_img
+
+# Linux
+vm_spoke_lin_n="vm-spoke-lin-0-$env-$l";                                echo $vm_spoke_lin_n
+vm_spoke_lin_img="Ubuntu2204";                                          echo $vm_spoke_lin_img
 
 # ------------------------------------------------------------------------------------------------
 # DEPLOYMENT
@@ -234,7 +255,53 @@ vnet1_rg_n="rg-dev-eastus";                                         echo $vnet1_
 vnet1_n="vnet-dev-eastus";                                          echo $vnet1_n            # must update
 ```
 
+## Create Spoke VMs if required
+
+```bash
+az network nsg create \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--name $nsg_sopke_i_n \
+--location $l \
+--tags $tags
+
+# Spoke snet
+az network vnet subnet create \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--vnet-name $vnet_bas_n \
+--name $snet_spoke_i_n \
+--address-prefixes $snet_spoke_i_addr \
+--network-security-group $nsg_bas_n
+
+# Windows
+az vm create \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--name $vm_spoke_win_n \
+--image $vm_spoke_win_img \
+--vnet-name $vnet_bas_n \
+--subnet $snet_spoke_i_n \
+--public-ip-address "" \
+--admin-username $vm_spoke_admin_n \
+--tags $tags
+
+# Linux
+az vm create \
+--subscription $sub_id \
+--resource-group $rg_bas_n \
+--name $vm_spoke_lin_n \
+--image $vm_spoke_lin_img \
+--vnet-name $vnet_bas_n \
+--subnet $snet_spoke_i_n \
+--public-ip-address "" \
+--admin-username $vm_spoke_admin_n \
+--tags $tags
+```
+
 ## Connect to a VM using a native client
+
+### Validate Connection to Bastion
 
 ```bash
 # Print Bastion Public IP
@@ -250,6 +317,8 @@ az network public-ip show \
 # TEST Connectivity To BASTION
 Test-NetConnection "BAS_PUBPLIC_IP" -Port 443 -InformationLevel "Detailed"
 ```
+
+### RDP to Spoke-VM through Bastion
 
 - [MS | Learn | Connect to a VM using a native client][2]
 

@@ -392,4 +392,3 @@ az account set --subscription '########-####-####-####-############'
 [9]: https://learn.microsoft.com/en-us/azure/bastion/tutorial-protect-bastion-host-ddos
 [10]: https://learn.microsoft.com/en-us/azure/bastion/bastion-nsg
 [11]: https://github.com/ArtiomLK/commands/blob/main/bash/readme.md#bash
-[12]: ./spoke-vm.md

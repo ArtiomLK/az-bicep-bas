@@ -33,6 +33,7 @@ module bastionDefault '../main.bicep' = {
 module bastionDeveloper '../main.bicep' = {
   name: 'bas-developer-deployment'
   params: {
+    bas_n: 'bas-developer'
     vnet_bas_addr: vnet_bas_addr
     bas_sku: 'Developer'
     env: env

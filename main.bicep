@@ -78,11 +78,11 @@ module bas 'modules/bas/bas.bicep' = {
     bas_n: bas_n
     bas_sku: bas_sku
     vnet_id: vnetBastion.id
-    bas_enableTunneling: bas_sku == 'Basic' ? false : bas_enableTunneling
-    bas_enableIpConnect: bas_sku == 'Basic' ? false : bas_enableIpConnect
-    bas_enableShareableLink: bas_sku == 'Basic' ? false : bas_enableShareableLink
+    bas_enableTunneling: bas_enableTunneling
+    bas_enableIpConnect: bas_enableIpConnect
+    bas_enableShareableLink:bas_enableShareableLink
     enableKerberos: bas_enableKerberos
-    snet_bas_id: vnetBastion.properties.subnets[0].id
+    snet_bas_id: bas_sku == 'Developer' ? '' : vnetBastion.properties.subnets[0].id
     pip_id: bas_sku == 'Developer' ? '' : pipBastion.outputs.id
   }
 }

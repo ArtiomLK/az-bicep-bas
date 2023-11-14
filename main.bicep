@@ -10,29 +10,29 @@ param location string = resourceGroup().location
 // ------------------------------------------------------------------------------------------------
 @description('Bastion vnet name. vnet-hub-extension-bas-dev-eastus')
 param bas_n string = 'bas-${env}-${location}'
-param bas_enableTunneling bool = true
-param bas_enableIpConnect bool = true
-param bas_enableShareableLink bool = true
-param bas_enableKerberos bool = false
 @allowed([
   'Standard'
   'Basic'
 ])
-param bas_sku string = 'Standard'
-param vnet_bas_n string = 'vnet-hub-extension-bas-${env}-${location}'
+param bas_sku string = 'Basic'
+param bas_enableTunneling bool = false
+param bas_enableIpConnect bool = false
+param bas_enableShareableLink bool = false
+param bas_enableKerberos bool = false
+param vnet_bas_n string = 'vnet-bas-${env}-${location}'
 param vnet_bas_addr string
-param bas_nsg_n string = 'nsg-bas-${env}-${location}'
-param bas_pip_n string = 'pip-bas-${env}-${location}'
+param ngs_bas_n string = 'nsg-bas-${env}-${location}'
+param pip_bas_n string = 'pip-bas-${env}-${location}'
 
 // ------------------------------------------------------------------------------------------------
 // Bastion - Deploy Azure Bastion
 // ------------------------------------------------------------------------------------------------
 module nsgBastion 'modules/nsg/nsgBas.bicep' = {
-  name: bas_nsg_n
+  name: ngs_bas_n
   params: {
-    tags:tags
+    tags: tags
     location: location
-    nsgName: bas_nsg_n
+    nsgName: ngs_bas_n
   }
 }
 
@@ -61,11 +61,11 @@ resource vnetBastion 'Microsoft.Network/virtualNetworks@2022-11-01' = {
 }
 
 module pipBastion 'modules/pip/pip.bicep' = {
-  name: bas_pip_n
+  name: pip_bas_n
   params: {
     tags: tags
     location: location
-    pip_n: bas_pip_n
+    pip_n: pip_bas_n
   }
 }
 

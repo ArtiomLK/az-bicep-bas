@@ -1,3 +1,6 @@
+@description('Specifies the location for resources.')
+param l_developer_sku string = 'northcentralus'
+
 // ------------------------------------------------------------------------------------------------
 // Deployment parameters
 // ------------------------------------------------------------------------------------------------
@@ -23,6 +26,17 @@ module bastionDefault '../main.bicep' = {
     vnet_bas_addr: vnet_bas_addr
     env: env
     location: location
+    tags: tags
+  }
+}
+
+module bastionDeveloper '../main.bicep' = {
+  name: 'bas-developer-deployment'
+  params: {
+    vnet_bas_addr: vnet_bas_addr
+    bas_sku: 'Developer'
+    env: env
+    location: l_developer_sku
     tags: tags
   }
 }

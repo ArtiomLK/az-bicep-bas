@@ -11,8 +11,9 @@ param location string = resourceGroup().location
 @description('Bastion vnet name. vnet-hub-extension-bas-dev-eastus')
 param bas_n string = 'bas-${env}-${location}'
 @allowed([
-  'Standard'
+  'Developer'
   'Basic'
+  'Standard'
 ])
 param bas_sku string = 'Basic'
 param bas_enableTunneling bool = false
@@ -36,7 +37,7 @@ module nsgBastion 'modules/nsg/nsgBas.bicep' = {
   }
 }
 
-resource vnetBastion 'Microsoft.Network/virtualNetworks@2022-11-01' = {
+resource vnetBastion 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   name: vnet_bas_n
   tags: tags
   location: location

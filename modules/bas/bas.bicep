@@ -5,8 +5,9 @@ param bas_n string
 param snet_bas_id string
 param pip_id string
 @allowed([
-  'Standard'
+  'Developer'
   'Basic'
+  'Standard'
 ])
 param bas_sku string
 param bas_enableTunneling bool

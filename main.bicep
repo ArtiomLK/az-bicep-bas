@@ -83,7 +83,7 @@ module bas 'modules/bas/bas.bicep' = {
     bas_enableShareableLink: bas_sku == 'Basic' ? false : bas_enableShareableLink
     enableKerberos: bas_enableKerberos
     snet_bas_id: vnetBastion.properties.subnets[0].id
-    pip_id: pipBastion.outputs.id
+    pip_id: bas_sku == 'Developer' ? '' : pipBastion.outputs.id
   }
 }
 

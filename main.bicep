@@ -47,7 +47,7 @@ resource vnetBastion 'Microsoft.Network/virtualNetworks@2023-04-01' = {
         vnet_bas_addr
       ]
     }
-    subnets: [
+    subnets: bas_sku == 'Developer' ? [] : [
       {
         name: 'AzureBastionSubnet'
         properties: {
@@ -61,7 +61,7 @@ resource vnetBastion 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   }
 }
 
-module pipBastion 'modules/pip/pip.bicep' = {
+module pipBastion 'modules/pip/pip.bicep' = if (bas_sku != 'Developer') {
   name: pip_bas_n
   params: {
     tags: tags
@@ -77,6 +77,7 @@ module bas 'modules/bas/bas.bicep' = {
     location: location
     bas_n: bas_n
     bas_sku: bas_sku
+    vnet_id: vnetBastion.id
     bas_enableTunneling: bas_sku == 'Basic' ? false : bas_enableTunneling
     bas_enableIpConnect: bas_sku == 'Basic' ? false : bas_enableIpConnect
     bas_enableShareableLink: bas_sku == 'Basic' ? false : bas_enableShareableLink

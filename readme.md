@@ -345,7 +345,8 @@ az network bastion rdp \
 ## Notes
 
 - [snet size + /26. Subnet size must be /26 or larger (/25, /24 etc.)][1]
-- [When you configure Azure Bastion using the Basic SKU, two instances are created. If you use the Standard SKU, you can specify the number of instances (with a minimum of two instances).][3]
+- [Basic SKU creates two instances which cannnot be modified during and after creation.][3]
+- [Standard SKU, you can specify the number of instances (with a minimum of two instances) and a maximum of 50 instances.][3]
 - [each instance can support 20 concurrent RDP connections and 40 concurrent SSH connections for medium workloads (see Azure subscription limits and quotas for more information). The number of connections per instances depends on what actions you're taking when connected to the client VM. For example, if you're doing something data intensive, it creates a larger load for the instance to process. Once the concurrent sessions are exceeded, another scale unit (instance) is required.][3]
 
 ## TroubleShoot

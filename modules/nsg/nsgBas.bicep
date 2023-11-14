@@ -3,7 +3,7 @@ param tags object
 
 param nsgName string
 
-resource nsgBas 'Microsoft.Network/networkSecurityGroups@2022-11-01' = {
+resource nsgBas 'Microsoft.Network/networkSecurityGroups@2023-04-01' = {
   name: nsgName
   location: location
   tags: tags

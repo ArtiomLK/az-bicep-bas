@@ -10,33 +10,34 @@ param location string = resourceGroup().location
 // ------------------------------------------------------------------------------------------------
 @description('Bastion vnet name. vnet-hub-extension-bas-dev-eastus')
 param bas_n string = 'bas-${env}-${location}'
-param bas_enableTunneling bool = true
-param bas_enableIpConnect bool = true
-param bas_enableShareableLink bool = true
-param bas_enableKerberos bool = false
 @allowed([
-  'Standard'
+  'Developer'
   'Basic'
+  'Standard'
 ])
-param bas_sku string = 'Standard'
-param vnet_bas_n string = 'vnet-hub-extension-bas-${env}-${location}'
+param bas_sku string = 'Basic'
+param bas_enableTunneling bool = false
+param bas_enableIpConnect bool = false
+param bas_enableShareableLink bool = false
+param bas_enableKerberos bool = false
+param vnet_bas_n string = 'vnet-bas-${env}-${location}'
 param vnet_bas_addr string
-param bas_nsg_n string = 'nsg-bas-${env}-${location}'
-param bas_pip_n string = 'pip-bas-${env}-${location}'
+param ngs_bas_n string = 'nsg-bas-${env}-${location}'
+param pip_bas_n string = 'pip-bas-${env}-${location}'
 
 // ------------------------------------------------------------------------------------------------
 // Bastion - Deploy Azure Bastion
 // ------------------------------------------------------------------------------------------------
 module nsgBastion 'modules/nsg/nsgBas.bicep' = {
-  name: bas_nsg_n
+  name: ngs_bas_n
   params: {
-    tags:tags
+    tags: tags
     location: location
-    nsgName: bas_nsg_n
+    nsgName: ngs_bas_n
   }
 }
 
-resource vnetBastion 'Microsoft.Network/virtualNetworks@2022-11-01' = {
+resource vnetBastion 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   name: vnet_bas_n
   tags: tags
   location: location
@@ -46,7 +47,7 @@ resource vnetBastion 'Microsoft.Network/virtualNetworks@2022-11-01' = {
         vnet_bas_addr
       ]
     }
-    subnets: [
+    subnets: bas_sku == 'Developer' ? [] : [
       {
         name: 'AzureBastionSubnet'
         properties: {
@@ -60,12 +61,12 @@ resource vnetBastion 'Microsoft.Network/virtualNetworks@2022-11-01' = {
   }
 }
 
-module pipBastion 'modules/pip/pip.bicep' = {
-  name: bas_pip_n
+module pipBastion 'modules/pip/pip.bicep' = if (bas_sku != 'Developer') {
+  name: pip_bas_n
   params: {
     tags: tags
     location: location
-    pip_n: bas_pip_n
+    pip_n: pip_bas_n
   }
 }
 
@@ -76,12 +77,13 @@ module bas 'modules/bas/bas.bicep' = {
     location: location
     bas_n: bas_n
     bas_sku: bas_sku
-    bas_enableTunneling: bas_sku == 'Basic' ? false : bas_enableTunneling
-    bas_enableIpConnect: bas_sku == 'Basic' ? false : bas_enableIpConnect
-    bas_enableShareableLink: bas_sku == 'Basic' ? false : bas_enableShareableLink
+    vnet_id: vnetBastion.id
+    bas_enableTunneling: bas_enableTunneling
+    bas_enableIpConnect: bas_enableIpConnect
+    bas_enableShareableLink:bas_enableShareableLink
     enableKerberos: bas_enableKerberos
-    snet_bas_id: vnetBastion.properties.subnets[0].id
-    pip_id: pipBastion.outputs.id
+    snet_bas_id: bas_sku == 'Developer' ? '' : vnetBastion.properties.subnets[0].id
+    pip_id: bas_sku == 'Developer' ? '' : pipBastion.outputs.id
   }
 }
 

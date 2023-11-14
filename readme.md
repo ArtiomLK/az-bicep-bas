@@ -345,6 +345,9 @@ az network bastion rdp \
 ## Notes
 
 - [snet size + /26. Subnet size must be /26 or larger (/25, /24 etc.)][1]
+- [Basic SKU creates two instances which cannnot be modified during and after creation.][3]
+- [Standard SKU, you can specify the number of instances (with a minimum of two instances) and a maximum of 50 instances.][3]
+- [each instance can support 20 concurrent RDP connections and 40 concurrent SSH connections for medium workloads (see Azure subscription limits and quotas for more information). The number of connections per instances depends on what actions you're taking when connected to the client VM. For example, if you're doing something data intensive, it creates a larger load for the instance to process. Once the concurrent sessions are exceeded, another scale unit (instance) is required.][3]
 
 ## TroubleShoot
 
@@ -383,7 +386,7 @@ az account set --subscription '########-####-####-####-############'
 
 [1]: https://learn.microsoft.com/en-us/azure/bastion/configuration-settings#subnet
 [2]: https://learn.microsoft.com/EN-US/azure/bastion/connect-native-client-windows
-[3]: https://github.com/ArtiomLK/commands/blob/main/bash/readme.md#create-rg
+[3]: https://learn.microsoft.com/en-us/azure/bastion/configuration-settings#instance
 [4]: https://github.com/ArtiomLK/commands/blob/main/bash/readme.md#create-vnet-peering
 [5]: https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-faq#what-address-ranges-can-i-use-in-my-vnets
 [6]: https://learn.microsoft.com/en-us/azure/bastion/vnet-peering

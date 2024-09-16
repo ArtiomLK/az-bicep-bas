@@ -41,7 +41,7 @@ var bas_properties = bas_sku == 'Developer' ? {
   disableCopyPaste: false
 }
 
-resource bastionHost 'Microsoft.Network/bastionHosts@2023-04-01' = {
+resource bastionHost 'Microsoft.Network/bastionHosts@2023-11-01' = {
   name: bas_n
   location: location
   properties: bas_properties
